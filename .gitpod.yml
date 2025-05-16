@@ -1,0 +1,10 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - init: npm install --legacy-peer-deps
+    command: npm run dev
+
+ports:
+  - port: 5173
+    onOpen: open-preview
