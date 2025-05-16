@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Minimal React Test</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      background-color: #141414;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    #app {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #181818;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .netflix-red {
+      color: #E50914;
+    }
+    .button {
+      background-color: #E50914;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="text/babel">
+    function MinimalApp() {
+      const [count, setCount] = React.useState(0);
+
+      return (
+        <div>
+          <h1 className="netflix-red">Minimal React Test</h1>
+          <p>If you can see this, React is working!</p>
+          <p>Count: {count}</p>
+          <button className="button" onClick={() => setCount(count + 1)}>
+            Increment
+          </button>
+        </div>
+      );
+    }
+
+    const container = document.getElementById('app');
+    const root = ReactDOM.createRoot(container);
+    root.render(<MinimalApp />);
+  </script>
+</body>
+</html> 

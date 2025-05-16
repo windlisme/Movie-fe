@@ -1,0 +1,24 @@
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #141414 !important;
+  color: white;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Override any potential conflicting styles */
+html, body, #root, .main-layout {
+  background-color: #141414 !important;
+  color: white !important;
+}
+
+/* Ensure all children inherit background color */
+.main-layout * {
+  background-color: inherit;
+} 

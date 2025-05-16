@@ -1,0 +1,27 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #141414 !important;
+  color: white !important;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #141414 !important;
+}
+
+/* Netflix-inspired colors */
+:root {
+  --netflix-red: #E50914;
+  --netflix-black: #141414;
+  --netflix-dark: #181818;
+  --netflix-gray: #808080;
+}

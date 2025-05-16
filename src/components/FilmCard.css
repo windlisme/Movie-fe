@@ -1,0 +1,45 @@
+/* FilmCard styles */
+.film-card {
+  width: 100%;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #181818;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.film-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.film-card-image {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.film-card:hover .film-card-image {
+  transform: scale(1.05);
+}
+
+.film-card-content {
+  padding: 15px;
+}
+
+.film-card-title {
+  margin-bottom: 8px;
+  font-size: 18px;
+  transition: color 0.3s ease;
+  color: #eeeeee;
+}
+
+.film-card:hover .film-card-title {
+  color: #ffffff;
+}
+
+.film-card-year {
+  color: #aaa;
+  font-size: 16px;
+} 

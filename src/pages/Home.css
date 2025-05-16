@@ -1,0 +1,32 @@
+/* Home page styles */
+.home-container {
+  padding: 20px !important;
+  background-color: #141414 !important;
+  min-height: 100vh !important;
+  color: white !important;
+}
+
+.home-title {
+  font-size: 28px !important;
+  margin-bottom: 30px !important;
+  color: white !important;
+}
+
+.films-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+  gap: 30px !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+}
+
+.loading-text {
+  padding: 20px !important;
+  font-size: 18px !important;
+  color: white !important;
+}
+
+.error-text {
+  padding: 20px !important;
+  color: red !important;
+} 
