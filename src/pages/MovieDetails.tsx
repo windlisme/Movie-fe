@@ -41,6 +41,10 @@ export const MovieDetails = () => {
     const [hasMoreReviews, setHasMoreReviews] = useState(false);
     const [expanded, setExpanded] = useState(false); // Track if reviews are expanded
     const { user } = useAuth();
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewText, setReviewText] = useState('');
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [reviewError, setReviewError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchFilm = async () => {
@@ -253,6 +257,73 @@ export const MovieDetails = () => {
         }
         
         return <div style={{ display: 'flex', gap: '2px' }}>{stars}</div>;
+    };
+
+    const handleSubmitReview = async () => {
+        if (!user || !film) return;
+        
+        setSubmittingReview(true);
+        setReviewError(null);
+        
+        try {
+            const reviewData = {
+                UserId: user.id,
+                FilmId: film.id,
+                Rating: reviewRating,
+                ReviewText: reviewText || null,
+                CreatedAt: new Date().toISOString(),
+                // Use exact property names from the model
+                User: {
+                    Id: user.id,
+                    Name: user.name,
+                    Email: user.email,
+                    Role: user.role
+                },
+                Film: {
+                    Id: film.id,
+                    Title: film.title,
+                    Description: film.description,
+                    ReleaseYear: film.releaseYear,
+                    Rating: film.rating,
+                    CoverUrl: film.coverUrl,
+                    VideoUrl: film.videoUrl,
+                    TorrentUrl: film.torrentUrl,
+                    Status: film.status
+                }
+            };
+
+            console.log('Submitting review data:', reviewData); // Debug log
+
+            const response = await fetch('https://localhost:7269/api/Reviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                console.error('Review submission error:', errorData); // Debug log
+                throw new Error(errorData?.message || 'Failed to submit review');
+            }
+
+            // Reset form
+            setReviewRating(5);
+            setReviewText('');
+            
+            // Refresh reviews
+            const reviewsResponse = await fetch(`https://localhost:7269/api/Reviews/film/${film.id}`);
+            if (reviewsResponse.ok) {
+                const newReviews = await reviewsResponse.json();
+                setReviews(newReviews);
+            }
+        } catch (err) {
+            setReviewError(err instanceof Error ? err.message : 'Failed to submit review. Please try again.');
+            console.error('Error submitting review:', err);
+        } finally {
+            setSubmittingReview(false);
+        }
     };
 
     if (loading) {
@@ -588,11 +659,8 @@ export const MovieDetails = () => {
                             </div>
                             <div>
                                 <h3 style={{ color: '#aaa', fontSize: '14px', marginBottom: '8px' }}>Rating</h3>
-                                <p style={{ fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span>{film?.rating || 'N/A'}</span>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        {renderStarRating(Number(film?.rating))}
-                                    </div>
+                                <p style={{ fontSize: '16px' }}>
+                                    {film?.rating || 'N/A'}
                                 </p>
                             </div>
         <div>
@@ -649,6 +717,130 @@ export const MovieDetails = () => {
                             )}
                         </div>
                     </div>
+                    
+                    {/* After Genres section and before Reviews section */}
+                    {user && (
+                        <div style={{ marginBottom: '40px', maxWidth: '100%' }}>
+                            <h2 style={{ 
+                                fontSize: '22px',
+                                fontWeight: 'bold',
+                                marginBottom: '16px',
+                                color: '#fff',
+                                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                paddingBottom: '10px'
+                            }}>
+                                Write a Review
+                            </h2>
+                            <div style={{ 
+                                backgroundColor: 'rgba(30, 30, 30, 0.5)',
+                                borderRadius: '8px',
+                                padding: '20px',
+                                maxWidth: '100%'
+                            }}>
+                                <div style={{ marginBottom: '20px' }}>
+                                    <label style={{ 
+                                        display: 'block', 
+                                        color: '#ddd',
+                                        marginBottom: '8px',
+                                        fontSize: '14px'
+                                    }}>
+                                        Rating
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {[1, 2, 3, 4, 5].map((rating) => (
+                                            <button
+                                                key={rating}
+                                                onClick={() => setReviewRating(rating)}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    border: '1px solid #555',
+                                                    borderRadius: '4px',
+                                                    padding: '8px 12px',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s ease',
+                                                    color: rating <= reviewRating ? '#FFD700' : '#aaa',
+                                                    borderColor: rating <= reviewRating ? '#FFD700' : '#555'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'transparent';
+                                                }}
+                                            >
+                                                {rating}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: '20px' }}>
+                                    <label style={{ 
+                                        display: 'block', 
+                                        color: '#ddd',
+                                        marginBottom: '8px',
+                                        fontSize: '14px'
+                                    }}>
+                                        Your Review
+                                    </label>
+                                    <textarea
+                                        value={reviewText}
+                                        onChange={(e) => setReviewText(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            minHeight: '100px',
+                                            padding: '12px',
+                                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                            border: '1px solid #555',
+                                            borderRadius: '4px',
+                                            color: '#fff',
+                                            fontSize: '14px',
+                                            resize: 'vertical'
+                                        }}
+                                        placeholder="Share your thoughts about this movie..."
+                                    />
+                                </div>
+                                {reviewError && (
+                                    <div style={{ 
+                                        color: '#ff4444',
+                                        marginBottom: '16px',
+                                        fontSize: '14px'
+                                    }}>
+                                        {reviewError}
+                                    </div>
+                                )}
+                                <button
+                                    onClick={handleSubmitReview}
+                                    disabled={submittingReview}
+                                    style={{
+                                        backgroundColor: '#E50914',
+                                        color: 'white',
+                                        border: 'none',
+                                        padding: '12px 24px',
+                                        borderRadius: '4px',
+                                        fontSize: '16px',
+                                        fontWeight: 'bold',
+                                        cursor: submittingReview ? 'not-allowed' : 'pointer',
+                                        opacity: submittingReview ? 0.7 : 1,
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!submittingReview) {
+                                            e.currentTarget.style.backgroundColor = '#F40612';
+                                            e.currentTarget.style.transform = 'scale(1.05)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!submittingReview) {
+                                            e.currentTarget.style.backgroundColor = '#E50914';
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }
+                                    }}
+                                >
+                                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     
                     {/* Reviews Section */}
                     <div style={{ marginBottom: '40px', maxWidth: '100%' }}>

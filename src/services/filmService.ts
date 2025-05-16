@@ -146,5 +146,43 @@ export const filmService = {
             console.error('Error fetching watch history:', error);
             throw error;
         }
+    },
+
+    async addFilm(filmData: {
+        Title: string;
+        Description: string;
+        ReleaseYear: number;
+        Duration: number;
+        Rating: string;
+        CoverUrl: string;
+        VideoUrl: string;
+        TorrentUrl: string;
+        Status: string;
+    }): Promise<Film> {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('User not authenticated');
+            }
+
+            const response = await fetch(`${API_URL}/Films`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(filmData)
+            });
+
+            if (!response.ok) {
+                console.error('API Error:', response.status, response.statusText);
+                throw new Error('Failed to add film');
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('Error adding film:', error);
+            throw error;
+        }
     }
 }; 
